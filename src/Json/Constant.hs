@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Json.Constant where
@@ -25,19 +24,19 @@ data Constant = ConstNameAndType {
     }
     |
     ConstInt {
-      intValue :: Scientific
+      intValue :: String
     }
     |
     ConstLong {
-      longValue :: Scientific
+      longValue :: String
     }
     |
     ConstFloat {
-      floatValue :: Scientific
+      floatValue :: String
     }
     |
     ConstDouble {
-      doubleValue :: Scientific
+      doubleValue :: String
     }
     |
     ConstInterfaceMethod {
@@ -75,10 +74,10 @@ instance FromJSON Constant where
                 
           tryCreateConstant _ _ (Just (String __stringValue)) _ _ _ _ _ _ _ = ConstString $ T.unpack __stringValue
           tryCreateConstant _ _ _ (Just (String __utf8Value))  _ _ _ _ _ _ = ConstUtf8 $ T.unpack __utf8Value
-          tryCreateConstant _ _ _ _ (Just (Number  __intValue)) _ _ _ _ _ = ConstInt __intValue
-          tryCreateConstant _ _ _ _ _ (Just (Number __longValue)) _ _ _ _ = ConstLong __longValue
-          tryCreateConstant _ _ _ _ _ _ (Just (Number __floatValue)) _ _ _ = ConstFloat __floatValue
-          tryCreateConstant _ _ _ _ _ _ _ (Just (Number __doubleValue)) _ _ = ConstDouble __doubleValue
+          tryCreateConstant _ _ _ _ (Just (String  __intValue)) _ _ _ _ _ = ConstInt $ T.unpack __intValue
+          tryCreateConstant _ _ _ _ _ (Just (String __longValue)) _ _ _ _ = ConstLong $ T.unpack __longValue
+          tryCreateConstant _ _ _ _ _ _ (Just (String __floatValue)) _ _ _ = ConstFloat $ T.unpack __floatValue
+          tryCreateConstant _ _ _ _ _ _ _ (Just (String __doubleValue)) _ _ = ConstDouble $ T.unpack __doubleValue
           tryCreateConstant _ _ _ _ _ _ _ _ (Just (String __methodName)) (Just (String __className)) =
             let methodName' = T.encodeUtf8 __methodName
                 className' = T.encodeUtf8 __className
@@ -88,27 +87,3 @@ instance FromJSON Constant where
             where tryCreateNameAndType (Right cname) (Right cclass) = ConstInterfaceMethod cname cclass
                   tryCreateNameAndType _ _ = ConstUnknown
           tryCreateConstant _ _ _ _ _ _ _ _ _ _ = ConstEmpty
-      
-          -- tryCreateConstant _ _ _ _ (Just (Number __intValue)) _ _ _ _ _ =
-          --     case toBoundedInteger __intValue :: Maybe Int of
-          --         Just n -> ConstInt n
-          --         Nothing -> ConstUnknown
-          -- tryCreateConstant _ _ _ _ _ (Just (Number __longValue)) _ _ _ _ = 
-          --     case toBoundedInteger __longValue :: Maybe Int of
-          --         Just n -> ConstLong n
-          --         Nothing -> ConstUnknown
-
--- data Constant = Constant {
---       name :: Maybe Constant
---     , constantType :: Maybe Constant
---     , stringValue :: Maybe String
---     , utf8Value :: Maybe String
---     , intValue :: Maybe Int
---     , longValue :: Maybe Integer
---     , floatValue :: Maybe Double
---     , doubleValue :: Maybe Double
---     , methodName :: Maybe Constant
---     , className :: Maybe Constant
---     }
---     deriving (Show, Eq, Generic)
--- instance FromJSON Constant

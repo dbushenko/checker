@@ -15,7 +15,7 @@ data Method = Method {
       name :: String
     , descriptor :: Descriptor
     , accessFlags :: [String]
-    , instructions :: [Instruction]
+    , instructions :: Maybe [Instruction]
     }
     deriving (Show, Eq, Generic)
 
